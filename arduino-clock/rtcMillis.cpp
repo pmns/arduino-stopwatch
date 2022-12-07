@@ -46,10 +46,11 @@ void rtcTakeSnap(){
   //This may behave erratically if rtcTakeSnap() is not called for long enough that todMils rolls over,
   //but this should not happen, because except for short hangs (eg wifi connect) we should be calling it at least 1/sec
   if(todMils >= 86400000){
-    while(todMils >= 86400000) todMils = todMils - 86400000; //while is just to ensure it's below 86400000
-    if(todD==daysInMonth(todY,todM)){ todD = 1; todM++; if(todM==13){ todM==1; todY++; } }
-    else todD++;
-    todW++; if(todW>6) todW=0;
+    //the stopwatch doesn't care about date
+    // while(todMils >= 86400000) todMils = todMils - 86400000; //while is just to ensure it's below 86400000
+    // if(todD==daysInMonth(todY,todM)){ todD = 1; todM++; if(todM==13){ todM==1; todY++; } }
+    // else todD++;
+    // todW++; if(todW>6) todW=0;
   }
 }
 
