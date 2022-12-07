@@ -278,6 +278,7 @@ void checkBtn(byte btn, unsigned long now){
   }
   //If the button has just been released...
   if(inputCur==btn && !bnow) {
+    inputLast = now; //stopwatch should consider a release an event
     inputCur = 0;
     //Only act if the button hasn't been stopped
     if(inputCurHeld<10) ctrlEvt(btn,0,inputCurHeld); //hey, the button was released after inputCurHeld
