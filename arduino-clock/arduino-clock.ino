@@ -1,7 +1,7 @@
 //Forked from https://github.com/clockspot/arduino-clock
 
 #include <arduino.h>
-#include "arduino-clock.h";
+#include "arduino-clock.h"
 
 ////////// Software version //////////
 const byte vMajor = 0;
@@ -18,6 +18,12 @@ const bool vDev = 1;
 #include "rtcDS3231.h" //active if RTC_DS3231 is defined in config – for an I2C DS3231 RTC module
 #include "rtcMillis.h" //active if RTC_MILLIS is defined in config – for a fake RTC based on millis
 #include "input.h" //for Sel/Alt/Up/Dn - supports buttons, rotary control, and Nano 33 IoT IMU
+
+#ifdef ENABLE_NEOPIXEL
+  #include <Adafruit_NeoPixel.h>
+  #define NUMPIXELS 1
+  Adafruit_NeoPixel pixels(NUMPIXELS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
+#endif
 
 
 ////////// Variables and storage //////////
@@ -48,6 +54,24 @@ void setup(){
   initOutputs();
   initInputs();
   updateDisplay();
+  
+
+#ifdef ENABLE_NEOPIXEL
+  #if defined(NEOPIXEL_POWER)
+    // If this board has a power control pin, we must set it to output and high
+    // in order to enable the NeoPixels. We put this in an #if defined so it can
+    // be reused for other boards without compilation errors
+    pinMode(NEOPIXEL_POWER, OUTPUT);
+    digitalWrite(NEOPIXEL_POWER, HIGH);
+  #endif
+  
+  pixels.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  pixels.setBrightness(20); // not so bright
+
+  pixels.fill(0xFFFFFF);
+  pixels.show();
+#endif
+
 }
 
 void loop(){
@@ -123,6 +147,15 @@ void checkRTC(bool force){
     updateDisplay();
     
     rtcSecLast = rtcGetSecond();
+    
+#ifdef ENABLE_NEOPIXEL
+    switch(rtcSecLast%3) {
+      case 0: pixels.fill(0xFF0000); pixels.show(); break;
+      case 1: pixels.fill(0x00FF00); pixels.show(); break;
+      case 2: pixels.fill(0x0000FF); pixels.show(); break;
+      default: break;
+    }
+#endif
     
   } //end if force or new second
 } //end checkRTC()
